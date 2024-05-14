@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angel Numbers AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: #0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        input, select, textarea, button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #0f0;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #0f0;
+        }
+        button {
+            cursor: pointer;
+        }
+        .output-box {
+            padding: 20px;
+            margin-top: 10px;
+            background-color: #000;
+            border: 1px solid #0f0;
+            border-radius: 10px;
+            color: #fff;
+            text-align: center;
+        }
+        .ledger-entry {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .ledger-title {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Angel Numbers</h1>
+    <p>Enter an angel number to unlock its message and guide your manifestations.</p>
+    <input type="text" id="angelInput" placeholder="Enter angel number" maxlength="10">
+    <select id="thoughtInput">
+        <option value="" disabled selected>What were you thinking about?</option>
+        <option value="relationships">Relationships</option>
+        <option value="career">Career</option>
+        <option value="health">Health</option>
+        <option value="finances">Finances</option>
+        <option value="personal growth">Personal Growth</option>
+    </select>
+    <textarea id="userThoughts" placeholder="Describe your thoughts when you saw the angel number..."></textarea>
+    <button onclick="generateOutput()">Enter</button>
+    <div id="angelOutput" class="output-box"></div>
+    <button onclick="addToLedger()">Save Angel Number</button>
+    <div class="ledger-title">Past Angel Numbers</div>
+    <div id="angelLedger"></div>
+
+    <script>
+        async function generateOutput() {
+            const number = document.getElementById('angelInput').value;
+            const thought = document.getElementById('thoughtInput').value;
+            const userThoughts = document.getElementById('userThoughts').value;
+
+            if (!/^\d+$/.test(number)) {
+                alert("Please enter a valid number.");
+                return;
+            }
+
+            // Basic interpretation
+            let output = getAngelNumberInterpretation(number);
+            output += getNumberExplanation(number);
+            if (thought) {
+                output += getAdditionalMessage(number, thought);
+            }
+
+            // Fetch AI generated response
+            try {
+                const response = await fetch('https://your-backend-function-url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ number, thought, userThoughts })
+                });
+                const data = await response.json();
+                output += `\n\nAI Insight: ${data.aiResponse}`;
+            } catch (error) {
+                console.error('Error fetching AI response:', error);
+            }
+
+            // Display output
+            document.getElementById('angelOutput').innerText = output;
+        }
+
+        function getAngelNumberInterpretation(number) {
+            // Define interpretations for angel numbers
+            const interpretations = {
+                '000': "Angel Number 000 signifies that you are in tune with the universe. It represents infinite potential and new beginnings. It is a reminder that you are a co-creator with the universe. Trust in your abilities and the endless possibilities before you. This number is associated with the Law of Oneness.\n",
+                '111': "Angel Number 111 signifies new beginnings and opportunities. It is a sign that your thoughts are aligning with your highest truths. Embrace positivity and focus on what you truly desire. The universe is urging you to take inspired action. This number is associated with the Law of Attraction.\n",
+                '222': "Angel Number 222 is a message of balance and harmony. It encourages you to maintain faith and trust in the process. Your efforts and intentions are manifesting behind the scenes. Stay patient and keep a positive attitude. This number is associated with the Law of Balance.\n",
+                // Add more interpretations as needed
+            };
+            return interpretations[number] || "Please enter a valid angel number between 000 and 999.\n";
+        }
+
+        function getNumberExplanation(number) {
+            const digits = [...new Set(number.split('').map(Number))];
+            const explanations = digits.map(digit => {
+                switch (digit) {
+                    case 0: return "0: Infinite potential and wholeness.";
+                    case 1: return "1: Independence and leadership.";
+                    case 2: return "2: Cooperation and balance.";
+                    case 3: return "3: Creativity and self-expression.";
+                    case 4: return "4: Stability and practicality.";
+                    case 5: return "5: Change and adventure.";
+                    case 6: return "6: Responsibility and nurturing.";
+                    case 7: return "7: Spirituality and introspection.";
+                    case 8: return "8: Abundance and power.";
+                    case 9: return "9: Completion and humanitarianism.";
+                    default: return "";
+                }
+            }).join(' ');
+            return `\nThe individual digits mean: ${explanations}`;
+        }
+
+        function getAdditionalMessage(number, thought) {
+            const messages = {
+                '000': {
+                    'relationships': "You are in tune with the universe. Your relationships reflect infinite potential and new beginnings.",
+                    'career': "Trust in your abilities and the endless possibilities in your career. You are a co-creator with the universe.",
+                    'health': "You have infinite potential for health and well-being. Trust in the process and the new beginnings in your health journey.",
+                    'finances': "Infinite potential surrounds your financial situation. Trust in your abilities and the endless possibilities before you.",
+                    'personal growth': "Embrace the infinite potential for personal growth. Trust in your abilities and the new beginnings on your path."
+                },
+                '111': {
+                    'relationships': "Focus on new beginnings in your relationships. Embrace positivity and open your heart to new connections.",
+                    'career': "This is a time for new career opportunities. Align your career goals with your highest truths and take inspired action.",
+                    'health': "Pay attention to new beginnings in your health journey. Focus on positive changes and align your actions with healthy habits.",
+                    'finances': "This number suggests new financial opportunities. Stay positive and focus on aligning your financial goals with your highest values.",
+                    'personal growth': "Embrace new opportunities for personal growth. Focus on aligning your thoughts with your true desires and take inspired action."
+                },
+                '222': {
+                    'relationships': "Maintain balance and harmony in your relationships. Trust the process and keep a positive attitude towards your connections.",
+                    'career': "Your career efforts are manifesting behind the scenes. Stay patient and maintain trust in the process.",
+                    'health': "Balance and harmony are key to your health. Trust in the process and keep a positive outlook towards your health goals.",
+                    'finances': "Your financial intentions are manifesting. Stay patient and maintain a balanced approach to your finances.",
+                    'personal growth': "Balance and harmony are crucial for your personal growth. Trust the process and stay positive about your progress."
+                }
+            };
+            return messages[number] && messages[number][thought] 
+                ? `\n\n${messages[number][thought]}` 
+                : '';
+        }
+
+        function addToLedger() {
+            const number = document.getElementById('angelInput').value;
+            const output = document.getElementById('angelOutput').innerText;
+            if (output) {
+                const ledger = document.getElementById('angelLedger');
+                const entry = document.createElement('div');
+                entry.classList.add('ledger-entry');
+                entry.innerHTML = `
+                    <div>
+                        <span>Angel Number ${number}</span>
+                        <button onclick="removeEntry(this)">x</button>
+                    </div>
+                    <div>${output}</div>
+                `;
+                entry.addEventListener('click', () => {
+                    entry.classList.toggle('open');
+                });
+                ledger.appendChild(entry);
+            }
+        }
+
+        function removeEntry(button) {
+            const entry = button.parentElement.parentElement;
+            entry.remove();
+        }
+    </script>
+</body>
+</html>
